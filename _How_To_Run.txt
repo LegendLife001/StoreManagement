@@ -1,0 +1,9 @@
+1.Run 'main.py' file.
+2.Enter username and password of your mysql.
+3.Now you have to select a database where is the data of the store would be saved.
+
+3(a): for this, if you already have a database with proper needed format you can just type the name of the database.
+
+3(b): if you dont any data and want to create new you can simplly click on "Load Database" button and and choose the create option.
+Otherwise you can also load a pre-saved database from the load option.
+
