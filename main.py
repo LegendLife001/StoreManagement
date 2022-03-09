@@ -1,17 +1,8 @@
 #==========================================    Imports & Import Handlings  ===============================================================
 print("loading...")
-import sys, os, webbrowser, datetime
-import warnings
+import sys, os, webbrowser, datetime, warnings
 from warnings import WarningMessage
-try:
-    from tkinter import *   #using tkinter to make a graphic interface
-except:
-    try:
-        os.system('cmd /c "python -m pip install tkinter"')
-    except:
-        os.system('cmd /c "python -m pip install --upgrade pip')
-        os.system('cmd /c "python -m pip install tkinter"')
-    from tkinter import *
+from tkinter import *   #using tkinter to make a graphic interface
 from tkinter import font
 import tkinter.messagebox
 from tkinter import ttk
@@ -21,7 +12,7 @@ import _thread
 def check_net(*args, **kwargs):
     import requests
     try:
-        request = requests.get("https://www.google.com", timeout=5)
+        request = requests.get("https://www.google.com", timeout=3)
         return True
     except (requests.ConnectionError, requests.Timeout) as exception:
         return False
