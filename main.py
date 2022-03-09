@@ -1,4 +1,4 @@
-#==========================================    Imports & Import Handlings  ===============================================================
+#=======================================================    Imports & Import Handlings  ========================================================================
 print("loading...")
 import sys, os, webbrowser, datetime, warnings
 from warnings import WarningMessage
@@ -9,7 +9,7 @@ from tkinter import ttk
 from tkinter.tix import *
 import glob
 import _thread
-def check_net(*args, **kwargs):
+def check_net(*args, **kwargs):    # to check if the system has internet connection
     import requests
     try:
         request = requests.get("https://www.google.com", timeout=3)
@@ -19,7 +19,7 @@ def check_net(*args, **kwargs):
 try:
     import tkcalendar
 except:
-    if check_net():
+    if check_net():       # if internet is working then install the library else prompt to get internet connection
         os.system('cmd /c "python -m pip install tkcalendar"')
         import tkcalendar
     else:
@@ -32,7 +32,7 @@ try:
     import mysql.connector as sql
 except:
     if check_net():
-        #mysql installing from buildin setup or web, if not exists
+        # mysql installing from buildin setup or web, if not exists
         if tkinter.messagebox.askyesno("Error", "MySQL is not installed\nYou need to install MySQL\nWould you like to run MySQL installer?"):
             try:
                 os.system(r".\additionals\mysql.msi")
@@ -48,9 +48,10 @@ except:
         if tkinter.messagebox.showerror("Network Error", "Mysql.connector module is missing, which this program will download automatically.\nBut Kindly make sure that you have PROPER INTERNET CONNECTION for that to happen."):
             sys.exit(0)
 print("imported")
-#=============================================================================================================================================
 
-#checking if the working table matches the ideal format
+#=======================================================  Login Window  ======================================================================================
+
+# checking if the working table format matches the ideal format
 def check_table(*args, **kwargs):
     tables=[]
     ideal= ['id', 'product_name', 'stock', 'cp', 'sp', 'totalcp', 'totalsp', 'assumed_profit', 'vender', 'date', 'time']
@@ -69,14 +70,14 @@ def check_table(*args, **kwargs):
         return True
     else:
         return False
-#default value
+# default value from the file
 with open(r".\additionals\default_values.txt") as f:
     ah= f.read().split(",")
     pre_user= ah[0]
     pre_pwd=ah[1]
     pre_db=ah[2]
-#definition 
-def main(entry, *args, **kwargs):     #first entry with database deatails; getting all details by user by entry widget
+# definition 
+def main(entry, *args, **kwargs):     # first entry with database details; getting all details by user by entry widget
     #texts in the entry window
     title= Label(entry, text="Welcome to Store Manager by Raja", font=("Stylish",21, "bold"), bg="beige", fg="#EE8262")
     title.place(x=30, y=10)
@@ -115,11 +116,11 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
     db_e.insert(END, pre_db)   
     global table_e
     table_e= "inventory"
-    def func_default(*args, **kwargs):
+    def func_default(*args, **kwargs):    # taking away the default canvas and button config
         head_l.config(text="Enter Login Details")
         canvas_default.destroy() 
         btn_default.config(text="Set default values", command=fun_default)
-    def fun_default(*args, **kwargs):
+    def fun_default(*args, **kwargs):     # the set the default values in the entry widgets of entry window
         global canvas_default
         canvas_default= Canvas(entry, width=550, height=270, bg="#00A6A6")
         head_l.config(text="Set Defaults")
@@ -156,11 +157,11 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
     btn_default= Button(entry, text="Set deafult values", width=20, bg="darkorange",font=("arial 12 bold"), cursor="hand2", command=fun_default, activebackground="OrangeRed3")
     btn_default.place(x=20, y=445) 
 
-    def else_load(*args, **kwargs):
+    def else_load(*args, **kwargs):   # to load or create a new db
         #1.create a new database and table with the provided name
         def create_fun(*args, **kwargs):
             def createe(*args, **kwargs):
-                eee= db_e.get()
+                eee= db_e.get()      # new db name
                 try:
                     conn= sql.connect(host="localhost", user=uname_e.get() , passwd=pwd_e.get())
                     c=conn.cursor()
@@ -314,8 +315,9 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
         btn_loaddb= Button(deff, text="Close", width=12, bg="brown",font=("arial 10 bold"), cursor="hand2", command=lambda *args, **kwargs: deff.destroy())
         btn_loaddb.place(x=225, y=190)
         deff.mainloop()
-    
-    def run(*args, **kwargs):    #running the entered details at backend to open or create the neeedful
+        
+    #running the entered details at backend to open or create the neeedful
+    def run(*args, **kwargs):    
         try:
             conn= sql.connect(host="localhost", user=uname_e.get() , passwd=pwd_e.get())
             c= conn.cursor()
@@ -366,7 +368,7 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
     btnn.bind("<Return>", run)
     close= Button(entry, text="Close", bg="brown", command=close, width=10, font=("arial 15 bold"), cursor="hand2").place(x=400, y=400)
 
-#ENTRY WINDOW    
+#ENTRY LOGIN WINDOW    
 entry=Tk()
 entry.title("STORE MANAGEMENT-RAJA.enter")  #putting title name of window
 entry.wm_iconbitmap(r".\additionals\icon.ico")      #title icon
@@ -384,7 +386,7 @@ def welcome(*args, **kwargs):
 ent=main(entry)
 entry.mainloop()
 
-#======================================================MAIN WINDOW=================================================================
+#==================================================   MAIN WINDOW   ==================================================================================
 #creating workspace frames and functionalities for each workspace in functions (accessed using buttons)
 
 #getting all the ids to make the id for the next stock addition item
@@ -413,12 +415,12 @@ def stock_addition(*args, **kwargs):     #stock addition section to add data in 
         can_mod.place_forget()
     except:
         pass
-    #button plaining
+    # disabling the unwanted button
     headbtn1.config(bg="#88BDBC", cursor="arrow", command=passs, state="disabled")
     headbtn2.config(bg="#FFC58B", cursor="hand2", command=stock_modify, state="normal")
     headbtn0.config(bg="#FFC58B", cursor="hand2", command=bill_btn, state="normal")
-    #class for the section
-    class Stock_addition:           #running Stock_addition class when stock_addition button is called
+    # class for the section
+    class Stock_addition:           # running Stock_addition class when stock_addition button is called
         def __init__(self, root,*args, **kwargs):
             root1.title("STORE MANAGEMENT-RAJA.Addition")
             try:
@@ -628,8 +630,8 @@ def stock_addition(*args, **kwargs):     #stock addition section to add data in 
                             self.name_e.focus()   
     b= Stock_addition(root1)
 
-def stock_modify(*args, **kwargs):     #stock modification section to modify data in the db
-    #clearing background canvases and frames for fresh space for this frame
+def stock_modify(*args, **kwargs):     # stock modification section to modify data in the db
+    # clearing background canvases and frames for fresh space for this frame
     try:
         left.pack_forget()
     except:
@@ -638,12 +640,12 @@ def stock_modify(*args, **kwargs):     #stock modification section to modify dat
         can_add.place_forget()
     except:
         pass
-    #button plaining
+    # button handling
     headbtn2.config(bg="#88BDBC", cursor="arrow", command=passs, state="disabled")
     headbtn1.config(bg="#FFC58B", cursor="hand2", command=stock_addition, state="normal")
     headbtn0.config(bg="#FFC58B", cursor="hand2", command=bill_btn, state="normal")
     
-    class Stock_modify:                  #running Stock_Modify class when stock_modify button is called
+    class Stock_modify:                  # running Stock_Modify class when stock_modify button is called
         def __init__(self, root,*args, **kwargs):
             root1.title("STORE MANAGEMENT-RAJA.Modification")
             self.conn= sql.connect(host="localhost", user=uname, passwd=pwd, database=dbName)
@@ -651,7 +653,7 @@ def stock_modify(*args, **kwargs):     #stock modification section to modify dat
             canvas.place(x=0, y=80)
             global can_mod
             can_mod= canvas
-            self.master=canvas     #making the window in self
+            self.master=canvas     # making the canvas in self
             master= self.master
             def close(*args, **kwargs):
                 closer()
@@ -690,7 +692,7 @@ def stock_modify(*args, **kwargs):     #stock modification section to modify dat
             c.execute("select id, Product_Name from inventory order by id")
             for i in c.fetchall():
                 val.append(str(i[0])+": "+str(i[1]))
-            #dropdown menu for viewing and selecting items
+            # dropdown menu for viewing and selecting items
             global callme_modify
             def callme_modify(*args, **kwargs):
                 selection=self.mc.get()
@@ -865,8 +867,8 @@ def stock_modify(*args, **kwargs):     #stock modification section to modify dat
     b= Stock_modify(root1)
 
 
-def stock_review(*args, **kwargs):     #inside the stock addition section
-    class Stock_review:                #running Stock_review class when stock_review button is called
+def stock_review(*args, **kwargs):     # inside the stock addition section
+    class Stock_review:                # running Stock_review class when stock_review button is called
         def __init__(self, root,*args, **kwargs):
             root1.title("STORE MANAGEMENT-RAJA.Stock_Review")
             self.conn= sql.connect(host="localhost", user=uname, passwd=pwd, database=dbName)
@@ -1010,7 +1012,7 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                             nd=sel+" "+s.get()
                             self.ll.config(text=f"No Data Found for {nd}")
                             self.ll.place(x=300, y=300)
-                        #updating total assumed profit
+                        # updating total assumed profit
                         pro=[]
                         for i in self.trees.get_children():
                             pro.append(int(self.trees.item(i)['values'][7]))
@@ -1073,7 +1075,7 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                             self.ll.config(text=f"No Data Found for {sel}")
                             self.ll.place(x=300, y=300)
                         self.count=0
-                        #updating total assumed profit
+                        # updating total assumed profit
                         pro=[]
                         for i in self.trees.get_children():
                             pro.append(int(self.trees.item(i)['values'][7]))
@@ -1160,7 +1162,7 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                     btc= Button(master, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcanc)
                     btc.place(x=620, y=10)
 
-            #sorting table data by 4 ways
+            # sorting table data by 4 ways
             var=["By Date","By Month", "By Year", "By Vender"]
             value_inside = StringVar(master)
             value_inside.set("Select an option")
@@ -1170,11 +1172,11 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
             sortbyoptions= tkinter.OptionMenu(master, value_inside, *var, command=callback)
             sortbyoptions.config(bg="lightgreen")
             sortbyoptions.place(x=120, y=15)
-            #product deleting
+            # product deleting
             self.delete_btn= Button(master, text="Delete Product",font=('ariel', 14, 'bold'), bg="lightgreen", command=self.delete)
             self.delete_btn.place(x=890, y=550)
 
-            #saving database in external folder
+            # saving database in external folder
             def dumpme(*args, **kwargs):
                 def cannn(*args, **kwargs):
                     dump_canvas.destroy()
@@ -1291,8 +1293,8 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
     Stock_review(root1)
 
 
-def sold_item_review(*args, **kwargs):      #inside the stock review section
-    class Sold_item_review:                 #running Sold_item_review class when sold_item_review button is called
+def sold_item_review(*args, **kwargs):      # inside the stock review section
+    class Sold_item_review:                 # running Sold_item_review class when sold_item_review button is called
         def __init__(self, root,*args, **kwargs):
             root1.title("STORE MANAGEMENT-RAJA.Sold_Item_Review")
             self.conn= sql.connect(host="localhost", user=uname, passwd=pwd, database=dbName)
@@ -1300,11 +1302,11 @@ def sold_item_review(*args, **kwargs):      #inside the stock review section
             center(root1)
             canvas= Frame(root, width=900, height=620, bg="#88BDBC")
             canvas.place(x=0, y=0)
-            self.master=canvas     #making the window in self
+            self.master=canvas     # making the window in self
             master= self.master
 
             dt_1= Label(master, text="Date\t     Time", font=('Courier', 13, 'bold'), bg="#88BDBC").place(x=10,y=560)
-            def clock(*args, **kwargs):         #running the live date and time in the window
+            def clock(*args, **kwargs):         # running the live date and time in the window
                 try:
                     now = datetime.datetime.now()
                     dt= now.strftime("%Y-%m-%d | %H:%M:%S")
@@ -1354,7 +1356,7 @@ def sold_item_review(*args, **kwargs):      #inside the stock review section
             scrollbar.config(command= self.trees.yview)
             self.count=0
             self.setup()
-            #showing bill functions
+            # showing bill functions
             def hide_bill(*args, **kwargs):
                 txt.destroy()
                 root1.geometry("900x620+160+5")
@@ -2323,7 +2325,7 @@ class Billing:
             contnc=1
             hold=int(items[0])
             uchold=-1
-            for check in range(len(items)-1):   #checking if the index of selected are continous or not
+            for check in range(len(items)-1):   # checking if the index of selected are continous or not
                 if int(items[check])==int(items[check+1])-1:
                     cont+=1
                 elif int(items[check])!=int(items[check+1])-1:
@@ -2343,25 +2345,25 @@ class Billing:
                 prodcp.pop(index)
                 self.total.pop(index)
 
-            if len(items)==1:   #if only 1 item is selected for deleting
+            if len(items)==1:   # if only 1 item is selected for deleting
                 for i in items:
                     index=int(i)
                     self.detuptst(i)
                     self.tree.delete(i)
                     pop(index)
-            elif cont==len(items):    #if all the selected rows are in continous form
+            elif cont==len(items):    # if all the selected rows are in continous form
                 for i in items:
                     self.detuptst(i)
                     self.tree.delete(i)
                     pop(hold)
-            elif contnc==len(items):   #if NONE of all the rows is continuous
+            elif contnc==len(items):   # if NONE of all the rows is continuous
                 for i in items:
                     self.detuptst(i)
                     self.tree.delete(i)
                     uchold+=1
                     ind=int(i)-uchold
                     pop(ind)
-            else:     #if rows are selected in a mixed continous and non-continuous form
+            else:     # if rows are selected in a mixed continous and non-continuous form
                 tkinter.messagebox.showerror("Invalid selection type","Kindly select single row or only continous rows \nor only non continuous rows!")
                 return
             self.x-=len(x)
@@ -2391,7 +2393,7 @@ class Billing:
         prodcp.clear()
 
 #===================================================================================================================================
-#running main billing button on header
+# running main billing button on header
 def bill_btn(*args, **kwargs):
     root1.title("STORE MANAGEMENT-RAJA.Billing")
     headbtn0.config(bg="#88BDBC", cursor="arrow",command= passs,state="disabled" )
@@ -2410,10 +2412,11 @@ def bill_btn(*args, **kwargs):
     headbtn2.config(cursor="hand2", bg="#FFC58B", command=stock_modify, state="normal")
     bill_combobox.focus()
 
-#for stock_review modification tab changing
+# for stock_review modification tab changing
 xyzz=[]
 
-root1= Tk()       #root window and window codes for the section
+# root window and window codes for the section
+root1= Tk()       
 root1.geometry("1260x645")
 def center(win, *args, **kwargs):
     """
@@ -2457,7 +2460,8 @@ headbtn3= Button(header, text= "Stock\nReview", width=17, height=4, bg="#FFC58B"
 headbtn3.place(relx=0.6, rely=0)
 headbtn4= Button(header, text= "Sold item\nReview", width=17, height=4, bg="#FFC58B", cursor="hand2", font=("Ariel", 12),activebackground="darkblue", command=sold_item_review)
 headbtn4.place(relx=0.8, rely=0)
-#adding infotext
+
+# adding infotext
 tip = tkinter.tix.Balloon(root1)
 tip.bind_widget(headbtn1, balloonmsg = "Here you can add new products")
 tip.bind_widget(headbtn2, balloonmsg = "Here you can modify the details\nof existing products.")
