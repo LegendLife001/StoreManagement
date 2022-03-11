@@ -1,12 +1,22 @@
 #=======================================================    Imports & Import Handlings  ========================================================================
 print("loading...")
 import sys, os, webbrowser, datetime, warnings
-from warnings import WarningMessage
+# from warnings import WarningMessage
 from tkinter import *   #using tkinter to make a graphic interface
 from tkinter import font
 import tkinter.messagebox
 from tkinter import ttk
-from tkinter.tix import *
+try:
+    from tkinter.tix import *
+except:
+    try:
+        with warnings.catch_warnings():
+            from test import support
+            action = 'always' if support.verbose else 'ignore'
+            warnings.simplefilter(action, DeprecationWarning)
+            from tkinter import ttk
+    except:
+        pass
 import glob
 import _thread
 def check_net(*args, **kwargs):    # to check if the system has internet connection
