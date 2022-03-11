@@ -6,17 +6,6 @@ from tkinter import *   #using tkinter to make a graphic interface
 from tkinter import font
 import tkinter.messagebox
 from tkinter import ttk
-try:
-    from tkinter.tix import *
-except:
-    try:
-        with warnings.catch_warnings():
-            from test import support
-            action = 'always' if support.verbose else 'ignore'
-            warnings.simplefilter(action, DeprecationWarning)
-            from tkinter import ttk
-    except:
-        pass
 import glob
 import _thread
 def check_net(*args, **kwargs):    # to check if the system has internet connection
@@ -108,13 +97,11 @@ def main(entry, *args, **kwargs):     # first entry with database details; getti
     entry.one = sign_img
     sign_canvas.create_image((0,0), image=sign_img, anchor='nw')
     # create instance of Balloon
-    tip = Balloon(entry)
     global uname_e    #making the entries global to use in other functions
     uname_e= Entry(entry, width=25, font=("Comic Sans MS", 14, "bold"), borderwidth=3)
     uname_e.place(x=230, y=120)
     uname_e.insert(END, pre_user)   #pre-inserting wanted details
     
-    tip.bind_widget(uname_e, balloonmsg = "This program uses MySQL database to storage the data\nEnter details of your mysql server")
     global pwd_e
     pwd_e= Entry(entry, width=25, font=("Comic Sans MS", 14, "bold"), show="*", borderwidth=3)
     pwd_e.place(x=230, y=170)
@@ -1222,8 +1209,6 @@ def stock_review(*args, **kwargs):     # inside the stock addition section
                 b1.place(x=200,y=90)
             dump_btn= Button(master, text="Export Database", bg="orange",font=('ariel', 12), command=dumpme)
             dump_btn.place(x=930, y=10)
-            tip = tkinter.tix.Balloon(root1)
-            tip.bind_widget(dump_btn, balloonmsg = "Save Database in database folder\nto use load it anywhere in the entry window")
 
             # creating button for modifying selected item
             def modifyme(*args, **kwargs):
@@ -1797,7 +1782,6 @@ class Billing:
             btn.place(x=760, y=0)
         self.bac= Button(self.right, text="X", bg="#55BDCA",borderwidth=0, cursor="hand2",font=("ariel",25), fg="red", command=close_cart)
         self.bac.place(x=455, y=0)
-        tip.bind_widget(self.bac, balloonmsg = "Close\nCart")
         self.remove= Button(self.right, text="Remove Items",height=2, bg="#BCEE68", font=("arial 10 bold"), cursor="hand2", command=self.removeitem)
         self.remove.place(y=550, x=360)
         self.clear_cart= Button(self.right, text="Clear Cart",height=2, bg="#BCEE68", font=("arial 10 bold"), cursor="hand2", command=self.clear_cart)
@@ -2471,13 +2455,6 @@ headbtn3.place(relx=0.6, rely=0)
 headbtn4= Button(header, text= "Sold item\nReview", width=17, height=4, bg="#FFC58B", cursor="hand2", font=("Ariel", 12),activebackground="darkblue", command=sold_item_review)
 headbtn4.place(relx=0.8, rely=0)
 
-# adding infotext
-tip = tkinter.tix.Balloon(root1)
-tip.bind_widget(headbtn1, balloonmsg = "Here you can add new products")
-tip.bind_widget(headbtn2, balloonmsg = "Here you can modify the details\nof existing products.")
-tip.bind_widget(headbtn3, balloonmsg = "Here you can view all the products\n and its details in the way you want")
-tip.bind_widget(headbtn4, balloonmsg = "Here you can view the transaction\nproducts datewise")
-tip.bind_widget(headbtn0, balloonmsg = "To sell and create bill of a customer")
 Billing(root1, left, right)
 root1.mainloop()
 
