@@ -24,8 +24,14 @@ except:
     else:
         if tkinter.messagebox.showerror("Network Error", "Python tkcalendar module is missing, which this program will download automatically.\nBut Kindly make sure that you have PROPER INTERNET CONNECTION for that to happen."):
             sys.exit(0)
-    # # except:
-    # #     os.system('cmd /c "python -m pip install --upgrade pip')
+    except:
+        os.system('cmd /c "python -m pip install --upgrade pip')
+        if check_net():       # if internet is working then install the library else prompt to get internet connection
+            os.system('cmd /c "python -m pip install tkcalendar"')
+            import tkcalendar
+        else:
+            if tkinter.messagebox.showerror("Network Error", "Python tkcalendar module is missing, which this program will download automatically.\nBut Kindly make sure that you have PROPER INTERNET CONNECTION for that to happen."):
+                sys.exit(0)
 #mysql importing and handling
 try:
     import mysql.connector as sql
