@@ -1735,6 +1735,7 @@ class Billing:
                 tkinter.messagebox.showerror("Error", "Invalid Entry")
         global val_fun
         def val_fun(*args, **kwargs):
+            val.clear()
             conn= sql.connect(host="localhost", user=uname , passwd=pwd, database=dbName)
             c= conn.cursor()
             c.execute("select id, Product_Name from inventory order by id")
