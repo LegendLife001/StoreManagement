@@ -18,13 +18,14 @@ def check_net(*args, **kwargs):    # to check if the system has internet connect
 try:
     import tkcalendar
 except:
-    if check_net():       # if internet is working then install the library else prompt to get internet connection
-        os.system('cmd /c "python -m pip install tkcalendar"')
-        import tkcalendar
-    else:
-        if tkinter.messagebox.showerror("Network Error", "Python tkcalendar module is missing, which this program will download automatically.\nBut Kindly make sure that you have PROPER INTERNET CONNECTION for that to happen."):
-            sys.exit(0)
-    except:
+    try:
+        if check_net():       # if internet is working then install the library else prompt to get internet connection
+            os.system('cmd /c "python -m pip install tkcalendar"')
+            import tkcalendar
+        else:
+            if tkinter.messagebox.showerror("Network Error", "Python tkcalendar module is missing, which this program will download automatically.\nBut Kindly make sure that you have PROPER INTERNET CONNECTION for that to happen."):
+                sys.exit(0)
+    except:      # the error occurs then maybe the pip command is old.
         os.system('cmd /c "python -m pip install --upgrade pip')
         if check_net():       # if internet is working then install the library else prompt to get internet connection
             os.system('cmd /c "python -m pip install tkcalendar"')
