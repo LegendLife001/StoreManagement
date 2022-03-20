@@ -1,6 +1,6 @@
 #=======================================================    Imports & Import Handlings  ========================================================================
 print("loading...")
-import sys, os, webbrowser, datetime, warnings
+import sys, os, webbrowser, datetime, random, warnings
 # from warnings import WarningMessage
 from tkinter import *   #using tkinter to make a graphic interface
 from tkinter import font
@@ -77,11 +77,18 @@ def check_table(*args, **kwargs):
     else:
         return False
 #default value
-with open(r".\additionals\default_values.txt") as f:
-    ah= f.read().split(",")
-    pre_user= ah[0]
-    pre_pwd=ah[1]
-    pre_db=ah[2]
+try:
+    with open(r".\additionals\default_values.txt") as f:
+        ah= f.read().split(",")
+        pre_user= ah[0]
+        pre_pwd=ah[1]
+        pre_db=ah[2]
+except:
+    if tkinter.messagebox.askyesno("File Not Found Error", "the 'default_values.txt' file\nin the addtionals folder is Not Found!\nDo you want to continue without defaults?"):
+        pre_user, pre_pwd, pre_db= "","",""
+        pass
+    else:
+        tkinter.messagebox.showinfo("Info", "Kindly download latest version from github\nhttps://github.com/LegendLife001/StoreManagement.git")
 #definition 
 def main(entry, *args, **kwargs):     #first entry with database deatails; getting all details by user by entry widget
     #texts in the entry window
@@ -100,9 +107,12 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
     info_l = Label(entry, text="(Hover for more info, )")
     sign_canvas= Canvas(entry, width=150, height=60, bg="beige", borderwidth=0)
     sign_canvas.place(x=385,y=440)
-    sign_img= PhotoImage(file=".\\additionals\\sign.png")
-    entry.one = sign_img
-    sign_canvas.create_image((0,0), image=sign_img, anchor='nw')
+    try:
+        sign_img= PhotoImage(file=".\\additionals\\sign.png")
+        sign_canvas.create_image((0,0), image=sign_img, anchor='nw')
+        entry.one = sign_img
+    except:
+        pass
     # create instance of Balloon
     global uname_e    #making the entries global to use in other functions
     uname_e= Entry(entry, width=25, font=("Comic Sans MS", 14, "bold"), borderwidth=3)
@@ -142,17 +152,21 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
         e3.place(x=200, y=140)
         def dooit(*args, **kwargs):
             if tkinter.messagebox.askyesno("Confirmation", "Are you sure you want to\nchange the default valeus"):
-                with open(r".\additionals\default_values.txt", "w+") as f:
-                    f.write(e1.get()+","+e2.get()+","+e3.get())
-                    f.seek(0)
-                    ahh= f.read().split(',')
-                    uname_e.delete(0, END)
-                    pwd_e.delete(0, END)
-                    db_e.delete(0, END)
-                    uname_e.insert(END, ahh[0])
-                    pwd_e.insert(END, ahh[1]) 
-                    db_e.insert(END, ahh[2])
-                    func_default()
+                try:
+                    with open(r".\additionals\default_values.txt", "w+") as f:
+                        f.write(e1.get()+","+e2.get()+","+e3.get())
+                        f.seek(0)
+                        ahh= f.read().split(',')
+                        uname_e.delete(0, END)
+                        pwd_e.delete(0, END)
+                        db_e.delete(0, END)
+                        uname_e.insert(END, ahh[0])
+                        pwd_e.insert(END, ahh[1]) 
+                        db_e.insert(END, ahh[2])
+                        func_default()
+                except:
+                    tkinter.messagebox.showerror("File Not Found Error", "the 'default_values.txt' in the addtionals folder is missing!")
+
         btn_set=Button(canvas_default, text="SET", font=("ariel", 15, "bold"), width=10, bg="darkorange", command=dooit)
         btn_set.place(x=330, y=200)
 
@@ -267,7 +281,6 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
                     tkinter.messagebox.showerror("Name Error", "Database name already exists\nKindly enter proper name")
                     c.execute(f"drop database {db1}")
                     return
-                
                 c.execute(query)
                 global uname
                 uname= uname1_e.get()
@@ -303,7 +316,10 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
         deff=Toplevel()
         deff.focus()
         entry.eval(f'tk::PlaceWindow {str(deff)} center')  #placing the window at the center of screen
-        deff.wm_iconbitmap(r".\additionals\icon.ico")  
+        try:
+            deff.wm_iconbitmap(r".\additionals\icon.ico")  
+        except:
+            pass
         deff.config(bg="beige")
         deff.title("Load Database")
         deff.geometry("350x230")
@@ -372,7 +388,10 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
 #ENTRY WINDOW    
 entry=Tk()
 entry.title("STORE MANAGEMENT-RAJA.enter")  #putting title name of window
-entry.wm_iconbitmap(r".\additionals\icon.ico")      #title icon
+try:
+    entry.wm_iconbitmap(r".\additionals\icon.ico")      #title icon
+except:
+    pass
 entry.geometry("550x500+160+15")            #size of window in pixels
 entry.configure(background="beige")       
 entry.resizable(False, False)        #making the window Non-extendable 
@@ -1970,13 +1989,24 @@ class Billing:
                 if not os.path.exists(dr):
                     os.makedirs(dr)
                 #getting invoice if from a text and updating it for future everytime
-                f= open(r".\additionals\inid.txt",'r+')
-                randomid= f.read()
-                f.truncate(0)
-                f.seek(0)
-                f.write(str(int(randomid)+1))
-                f.close()
-                filename= str(dr) + "\\" + str(randomid)+".rtf"
+                def randomno(*args, **kwargs):
+                    id= random.randint(1111, 9999)
+                    return id
+                try:
+                    f= open(r".\additionals\inid.txt",'r+')
+                    randomid= f.read()
+                    f.truncate(0)
+                    f.seek(0)
+                    f.write(str(int(randomid)+1))
+                    f.close()
+                except:
+                    randomid= randomno()
+                while True:
+                    try:
+                        filename= str(dr) + "\\" + str(randomid)+".rtf"
+                        break
+                    except:
+                        randomid= randomno()
                 file=open(filename, "w")
                 file.write(final)
                 sn=1
@@ -2023,7 +2053,7 @@ class Billing:
                     prodcp.clear()
                     self.total.clear()
                     top.destroy()
-                    if tkinter.messagebox.askyesno("Print Bill", "Successfully updated and created bill\nDo you want to want the bill?"):
+                    if tkinter.messagebox.askyesno("Print Bill", "Successfully updated and created bill\nDo you want to print the bill?"):
                         os.startfile(filename, "print")
                 else:
                     tkinter.messagebox.showerror("Error","No item added")            
@@ -2179,9 +2209,13 @@ class Billing:
                         top_option.focus()
                         top_option.place(x=330, y=10)
                         top_l1.place(x=10, y=10)
-                    self.img_bill= PhotoImage(file=".\\additionals\\backkk.png")
-                    backbtn= Button(top, image=self.img_bill, bg="#55BDCA", activebackground="#55BDCA", cursor="hand2", borderwidth=0, command=back1)
-                    backbtn.place(x=480, y=5)
+                    try:
+                        self.img_bill= PhotoImage(file=".\\additionals\\backkk.png")
+                        backbtn= Button(top, image=self.img_bill, bg="#55BDCA", activebackground="#55BDCA", cursor="hand2", borderwidth=0, command=back1)
+                        backbtn.place(x=480, y=5)
+                    except:
+                        backbtn= Button(top, text="<---", bg="#55BDCA", activebackground="#55BDCA", cursor="hand2", borderwidth=0, command=back1, font=("Comic Sans" ,18,"bold"))
+                        backbtn.place(x=480, y=5)
                     top_dis= Label(top, text= "Total Discount", font=("arial 19 bold"), bg="#55BDCA", fg="yellow")
                     top_dis.place(x=10, y=10)
                     top_dis1= Label(top, text= "%", font=("arial 19 bold"), bg="#55BDCA", fg="black")
@@ -2208,9 +2242,13 @@ class Billing:
                         top_option.focus()
                         top_option.place(x=330, y=10)
                         top_l1.place(x=10, y=10)
-                    self.img_bill= PhotoImage(file=".\\additionals\\backkk.png")
-                    backbtn= Button(top, image=self.img_bill, bg="#55BDCA", activebackground="#55BDCA", cursor="hand2", borderwidth=0, command=back1)
-                    backbtn.place(x=480, y=5)
+                    try:
+                        self.img_bill= PhotoImage(file=".\\additionals\\backkk.png")
+                        backbtn= Button(top, image=self.img_bill, bg="#55BDCA", activebackground="#55BDCA", cursor="hand2", borderwidth=0, command=back1)
+                        backbtn.place(x=480, y=5)
+                    except:
+                        backbtn= Button(top, text="<--", bg="#55BDCA", activebackground="#55BDCA", cursor="hand2", borderwidth=0, command=back1, font=("Comic Sans" ,14,"bold"))
+                        backbtn.place(x=480, y=5)
                     top_dis= Label(top, text= "Total Discount", font=("arial 19 bold"), bg="#55BDCA", fg="yellow")
                     top_dis.place(x=10, y=10)
                     top_dis1= Label(top, text= "₹", font=("arial 19 bold"), bg="#55BDCA", fg="black")
@@ -2237,9 +2275,13 @@ class Billing:
                         top_option.focus()
                         top_option.place(x=330, y=10)
                         top_l1.place(x=10, y=10)
-                    self.img_bill= PhotoImage(file=".\\additionals\\backkk.png")
-                    backbtn= Button(top, image=self.img_bill, bg="#55BDCA", activebackground="#55BDCA", cursor="hand2", borderwidth=0, command=back1)
-                    backbtn.place(x=480, y=5)
+                    try:
+                        self.img_bill= PhotoImage(file=".\\additionals\\backkk.png")
+                        backbtn= Button(top, image=self.img_bill, bg="#55BDCA", activebackground="#55BDCA", cursor="hand2", borderwidth=0, command=back1)
+                        backbtn.place(x=480, y=5)
+                    except:
+                        backbtn= Button(top, text="<--", bg="#55BDCA", activebackground="#55BDCA", cursor="hand2", borderwidth=0, command=back1, font=("Comic Sans" ,14,"bold"))
+                        backbtn.place(x=480, y=5)
                     top_disd= Label(top, text= "Total Amount: ", font=("arial 19 bold"), bg="#55BDCA", fg="yellow")
                     top_disd.place(x=10, y=10)
                     top_disd1= Label(top, text= f"₹{total}/-", font=("arial 19 bold"), bg="#55BDCA", fg="black")
@@ -2443,7 +2485,10 @@ center(root1)
 #main window to work on
 root1.resizable(False, False)
 root1.title("STORE MANAGEMENT-RAJA.Billing")
-root1.wm_iconbitmap(r".\additionals\icon.ico") 
+try:
+    root1.wm_iconbitmap(r".\additionals\icon.ico")
+except:
+    pass
 root1.focus()
 # first framing a billing window in the main window with header buttons to access other parts(stock addition, modification, review...)
 left= Frame(root1, width=760, height=645, bg= "#88BDBC" )
