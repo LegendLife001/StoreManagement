@@ -307,7 +307,7 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
             load_me= Button(fr, text="LOAD Database", width=25, height=2, bg="#20bebe",font=("arial 12 bold"), cursor="hand2", command=loadd)
             load_me.place(x=270, y=370)
             def close(*args, **kwargs):
-                root1.destroy()
+                entry.destroy()
                 sys.exit(0)
             close= Button(fr, text="Close", bg="brown", command=close, font=("arial 15 bold"), cursor="hand2").place(x=450, y=440)  
         
@@ -378,7 +378,7 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
     pwd_e.bind("<Return>",  focusme)
     db_e.bind("<Return>",  focusme)
     def close(*args, **kwargs):
-        root1.destroy()
+        entry.destroy()
         sys.exit(0)      
     btnn= Button(entry, text="ENTER", width=25, height=2, bg="#20bebe",font=("arial 12 bold"), cursor="hand2", command=run, borderwidth=4,activebackground="OrangeRed3")
     btnn.place(x=270, y=326)    
@@ -401,7 +401,7 @@ entry.resizable(False, False)        #making the window Non-extendable
 
 def on_closing(*args, **kwargs):   #CLOSING the window by X button on title bar 
     if tkinter.messagebox.askokcancel("Close Tabs", "Are you sure to close the main window?"):
-        root1.destroy()
+        entry.destroy()
         sys.exit(0)
 entry.protocol("WM_DELETE_WINDOW", on_closing)   #closing window by X button on title bar
 def welcome(*args, **kwargs):
