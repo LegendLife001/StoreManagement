@@ -208,6 +208,7 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
             db_e.delete(0, END)
             db_e.focus()
             btnn.config(command=createe, text="Create Database")
+            btnn.bind("<Return>", createe)
             
         #2.To load database from a local path
         def load_fun(*args, **kwargs):
@@ -306,6 +307,7 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
             load_me= Button(fr, text="LOAD Database", width=25, height=2, bg="#20bebe",font=("arial 12 bold"), cursor="hand2", command=loadd)
             load_me.place(x=270, y=370)
             def close(*args, **kwargs):
+                root1.destroy()
                 sys.exit(0)
             close= Button(fr, text="Close", bg="brown", command=close, font=("arial 15 bold"), cursor="hand2").place(x=450, y=440)  
         
@@ -376,6 +378,7 @@ def main(entry, *args, **kwargs):     #first entry with database deatails; getti
     pwd_e.bind("<Return>",  focusme)
     db_e.bind("<Return>",  focusme)
     def close(*args, **kwargs):
+        root1.destroy()
         sys.exit(0)      
     btnn= Button(entry, text="ENTER", width=25, height=2, bg="#20bebe",font=("arial 12 bold"), cursor="hand2", command=run, borderwidth=4,activebackground="OrangeRed3")
     btnn.place(x=270, y=326)    
@@ -398,6 +401,7 @@ entry.resizable(False, False)        #making the window Non-extendable
 
 def on_closing(*args, **kwargs):   #CLOSING the window by X button on title bar 
     if tkinter.messagebox.askokcancel("Close Tabs", "Are you sure to close the main window?"):
+        root1.destroy()
         sys.exit(0)
 entry.protocol("WM_DELETE_WINDOW", on_closing)   #closing window by X button on title bar
 def welcome(*args, **kwargs):
@@ -481,6 +485,7 @@ def stock_addition(*args, **kwargs):     #stock addition section to add data in 
                     pass
             def close(*args, **kwargs):
                 closer()
+                root1.destroy()
                 sys.exit(0)
             btn_close= Button(master, text="CLOSE", padx=20, pady=10, command=close, bg="brown", cursor="hand2")
             btn_close.place(x=580, y=500)
@@ -677,6 +682,7 @@ def stock_modify(*args, **kwargs):     #stock modification section to modify dat
             master= self.master
             def close(*args, **kwargs):
                 closer()
+                root1.destroy()
                 sys.exit(0)
             def back(*args, **kwargs):
                 root1.geometry("1260x645")
@@ -928,6 +934,7 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
             scrollbar.config(command= self.trees.yview)
             def close(*args, **kwargs):
                 closer()
+                root1.destroy()
                 sys.exit(0)
             def back(*args, **kwargs):
                 root1.title("STORE MANAGEMENT-RAJA.Billing")
@@ -1337,6 +1344,7 @@ def sold_item_review(*args, **kwargs):      #inside the stock review section
             clock()
             def close(*args, **kwargs):
                 closer()
+                root1.destroy()
                 sys.exit(0)
             def back(*args, **kwargs):
                 root1.title("STORE MANAGEMENT-RAJA.Billing")
@@ -1690,7 +1698,7 @@ class Billing:
         c=self.conn.cursor()
         c.execute(f"use {dbName}")
         # getting all tables
-        c.execute("show tables;".format(TableName))
+        c.execute("show tables;")
         tbs=[]
         for i in c.fetchall(): 
             tbs.append(i[0])
@@ -1853,6 +1861,7 @@ class Billing:
                 self.detuptst(i)
         def close(*args, **kwargs):
             closer()
+            root1.destroy()
             sys.exit(0)
         self.main_close_btn= Button(self.left, text="C\nL\nO\nS\nE", bg="brown", font=("arial 12 bold"), cursor="hand2", command=close)
         self.main_close_btn.place(x=0, y=460)
@@ -1860,6 +1869,7 @@ class Billing:
         def on_closing2(*args, **kwargs):   #CLOSING the window by X button on title bar 
             if tkinter.messagebox.askokcancel("Close Tabs", "Are you sure to close the main window?"):
                 closer()
+                root1.destroy()
                 sys.exit(0)
         root1.protocol("WM_DELETE_WINDOW", on_closing2)   #closing window by X button on title bar
         #for updating stock in cart
