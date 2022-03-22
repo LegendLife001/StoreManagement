@@ -16,9 +16,9 @@ def check_net(*args, **kwargs):    # to check if the system has internet connect
     except (requests.ConnectionError, requests.Timeout) as exception:
         return False
 try:
-    # import tkcalendar
-    global var_tkcalendar
-    var_tkcalendar= True
+    import tkcalendar
+    global var1_tkcalendar
+    var1_tkcalendar= True
 except:
     try:
         if check_net():       # if internet is working then install the library else prompt to get internet connection
@@ -39,7 +39,8 @@ except:
     try:
         import tkcalendar
     except:
-        var_tkcalendar= True
+        global var2_tkcalendar
+        var2_tkcalendar= True
 #mysql importing and handling
 try:
     import mysql.connector as sql
@@ -988,7 +989,7 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                         d= Spinbox(sortframe, value= datee, textvariable=val_d, width=5, font=("Ariel", 15, "bold"), state="readonly")
                         d.place(x=190, y=30)
                         monthh= ["0"+str(i) for i in range(1, 10)]+['10', '11', '12']
-                        m= Spinbox(sortframe, value= monthh, textvariable=val_m, width=5, font=("Ariel", 15, "bold"), state="readonly"
+                        m= Spinbox(sortframe, value= monthh, textvariable=val_m, width=5, font=("Ariel", 15, "bold"), state="readonly")
                         m.place(x=290, y=30)
                         y= Spinbox(sortframe, from_=2021, to_=3000, textvariable=val_y, width=5, font=("Ariel", 15, "bold"), state="readonly")
                         y.place(x=390, y=30)
@@ -1032,7 +1033,7 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                         self.ll.place_forget()
                         self.count=0
                         self.setup()
-                        if var_tkcalendar==False:
+                        if var1_tkcalendar:
                             cal.destroy()
                         value_inside.set("Select an option")
                     btt= Button(sortframe, text="Sort", font=('ariel', 17, 'bold'), bg="lightgreen", command=btt_fun)
@@ -1638,7 +1639,7 @@ Sno. Product Name			    Qty	Amount
                 bts.place(x=250, y=10)
                 btc= Button(master, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcanc)
                 btc.place(x=390, y=10)
-            if var_tkcalendar:
+            if var2_tkcalendar:
                 sortdate= Button(master, text="Sort by Date",width=15, bg="lightgreen", font=("arial 13 bold"), cursor="hand2", command=fun_sortdate )
                 sortdate.place(x=30, y=20)
             sortmonth= Button(master, text="Sort by Month",width=15, bg="lightgreen", font=("arial 13 bold"), cursor="hand2", command=fun_sortmonth )
@@ -2521,5 +2522,4 @@ headbtn4= Button(header, text= "Sold item\nReview", width=17, height=4, bg="#FFC
 headbtn4.place(relx=0.8, rely=0)
 
 Billing(root1, left, right)
-
 root1.mainloop()
