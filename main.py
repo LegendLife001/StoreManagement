@@ -16,23 +16,30 @@ def check_net(*args, **kwargs):    # to check if the system has internet connect
     except (requests.ConnectionError, requests.Timeout) as exception:
         return False
 try:
-    import tkcalendar
+    # import tkcalendar
+    global var_tkcalendar
+    var_tkcalendar= True
 except:
     try:
         if check_net():       # if internet is working then install the library else prompt to get internet connection
             os.system('cmd /c "python -m pip install tkcalendar"')
-            import tkcalendar
         else:
             if tkinter.messagebox.showerror("Network Error", "Python tkcalendar module is missing, which this program will download automatically.\nBut Kindly make sure that you have PROPER INTERNET CONNECTION for that to happen."):
                 sys.exit(0)
     except:      # the error occurs then maybe the pip command is old.
-        os.system('cmd /c "python -m pip install --upgrade pip')
-        if check_net():       # if internet is working then install the library else prompt to get internet connection
-            os.system('cmd /c "python -m pip install tkcalendar"')
-            import tkcalendar
-        else:
-            if tkinter.messagebox.showerror("Network Error", "Python tkcalendar module is missing, which this program will download automatically.\nBut Kindly make sure that you have PROPER INTERNET CONNECTION for that to happen."):
-                sys.exit(0)
+        try:
+            os.system('cmd /c "python -m pip install --upgrade pip')
+            if check_net():       # if internet is working then install the library else prompt to get internet connection
+                os.system('cmd /c "python -m pip install tkcalendar"')
+            else:
+                if tkinter.messagebox.showerror("Network Error", "Python tkcalendar module is missing, which this program will download automatically.\nBut Kindly make sure that you have PROPER INTERNET CONNECTION for that to happen."):
+                    sys.exit(0)
+        except:
+            pass
+    try:
+        import tkcalendar
+    except:
+        var_tkcalendar= True
 #mysql importing and handling
 try:
     import mysql.connector as sql
@@ -959,28 +966,50 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
             self.setup()
             #function for sorting the table data
             def callback(selection, *args, **kwargs):
+                sortframe=Frame(master, width=1100, height=68, bg='#88BDBC')
+                sortframe.place(x=0, y=0)
                 if selection=="By Date":
-                    sortbyoptions.place_forget()
-                    ll1.config(text="Sort By Date")
-                    dump_btn.place_forget()
                     now = datetime.datetime.now()
                     y= int(now.strftime("%Y"))
                     m= int(now.strftime("%m"))
                     d= int(now.strftime("%d"))
-                    cal= tkcalendar.Calendar(master, selectmode="day", year=y, day=d, month=m)
-                    cal.place(x=190, y=10)
-                    def calp(*args, **kwargs):
+                    ch= False
+                    try:
+                        cal= tkcalendar.Calendar(master, selectmode="day", year=y, day=d, month=m)
                         cal.place(x=190, y=10)
-                        btt2.config(text="Hide Calendar")
-                        btt2.config(command=calf)
-                    def calf(*args, **kwargs):
-                        cal.place_forget()
-                        btt2.config(text="Show Calendar")
-                        btt2.config(command= calp)
+                        cal.lift()
+                        ch= True
+                    except:
+                        def get_date():
+                            return d.get()+"."+m.get()+"."+y.get()
+                        # if var_tkcalendar==False:
+                        val_d, val_m, val_y= IntVar(), IntVar(), IntVar()
+                        datee=["0"+str(i) for i in range(1, 10)] + [str(i) for i in range(10, 32)]
+                        d= Spinbox(sortframe, value= datee, textvariable=val_d, width=5, font=("Ariel", 15, "bold"), state="readonly")
+                        d.place(x=190, y=30)
+                        monthh= ["0"+str(i) for i in range(1, 10)]+['10', '11', '12']
+                        m= Spinbox(sortframe, value= monthh, textvariable=val_m, width=5, font=("Ariel", 15, "bold"), state="readonly"
+                        m.place(x=290, y=30)
+                        y= Spinbox(sortframe, from_=2021, to_=3000, textvariable=val_y, width=5, font=("Ariel", 15, "bold"), state="readonly")
+                        y.place(x=390, y=30)
+                    ll1.config(text="Sort By Date")
+                    ll1.lift()
+                    if ch:
+                        def calp(*args, **kwargs):
+                            cal.place(x=190, y=10)
+                            btt2.config(text="Hide Calendar")
+                            btt2.config(command=calf)
+                        def calf(*args, **kwargs):
+                            cal.place_forget()
+                            btt2.config(text="Show Calendar")
+                            btt2.config(command= calp)
                     def btt_fun(*args, **kwargs):
                         self.ll.place_forget()
-                        cal.config(date_pattern='dd.MM.yyyy')
-                        date=cal.get_date()
+                        try:
+                            cal.config(date_pattern='dd.MM.yyyy')
+                            date=cal.get_date()
+                        except:
+                            date= get_date()
                         self.trees.delete(*self.trees.get_children())
                         c.execute(f"select * from {TableName} WHERE date='{date}'")
                         data=c.fetchall()
@@ -998,28 +1027,28 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                         self.profit.config(text=f"Total Assumed Profit= Rs.{sum(pro)}/-")
                     def callcan(*args, **kwargs):
                         self.trees.delete(*self.trees.get_children())
-                        self.setup()
-                        btt.destroy()
-                        btt2.destroy()
-                        cal.destroy()
-                        btt3.destroy()
+                        sortframe.destroy()
                         ll1.config(text="Sort By")
-                        sortbyoptions.place(x=120, y=15)
-                        dump_btn.place(x=930, y=10)
                         self.ll.place_forget()
                         self.count=0
+                        self.setup()
+                        if var_tkcalendar==False:
+                            cal.destroy()
                         value_inside.set("Select an option")
-                    btt= Button(master, text="Sort", font=('ariel', 17, 'bold'), bg="lightgreen", command=btt_fun)
+                    btt= Button(sortframe, text="Sort", font=('ariel', 17, 'bold'), bg="lightgreen", command=btt_fun)
                     btt.place(x=480,y=10 )
-                    btt2= Button(master, text="Hide Calendar",font=('ariel', 17, 'bold'), bg="lightgreen", command=calf)
-                    btt2.place(x=600, y=10)
-                    btt3= Button(master, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcan)
-                    btt3.place(x=820, y=10)
+                    if ch:
+                        btt2= Button(sortframe, text="Hide Calendar",font=('ariel', 17, 'bold'), bg="lightgreen", command=calf)
+                        btt2.place(x=600, y=10)
+                        btt3= Button(sortframe, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcan)
+                        btt3.place(x=820, y=10)
+                    else:
+                        btt3= Button(sortframe, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcan)
+                        btt3.place(x=600, y=10)
 
                 elif selection=="By Month":
-                    sortbyoptions.place_forget()
                     ll1.config(text="Sort By Month")
-                    dump_btn.place_forget()
+                    ll1.lift()
                     def callme(*args, **kwargs):
                         self.ll.place_forget()
                         sel= me.get()
@@ -1045,10 +1074,10 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                             pro.append(int(self.trees.item(i)['values'][7]))
                         self.profit.config(text=f"Total Assumed Profit= Rs.{sum(pro)}/-")
                         
-                    value_in = StringVar(master)
+                    value_in = StringVar(sortframe)
                     val=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
                     realm=['01','02','03','04', '05', '06', '07', '08', '09', '10', '11', '12']
-                    me= tkinter.ttk.Combobox(master, textvariable=value_in, values=val, state='readonly')
+                    me= tkinter.ttk.Combobox(sortframe, textvariable=value_in, values=val, state='readonly')
                     me.place(x=210, y=20)
                     value_in.set("select month")
                     me.bind("<<ComboboxSelected>>", callme)
@@ -1058,36 +1087,25 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                     me.bind("<Return>", callme)
                     me.focus()
                     val_s= IntVar()
-                    s= Spinbox(master, from_=2018, to=2025, textvariable=val_s, width=9, font=("Ariel", 15, "bold"))
+                    s= Spinbox(sortframe, from_=2018, to=2025, textvariable=val_s, width=9, font=("Ariel", 15, "bold"))
                     s.place(x=530, y=20)
                     val_s.set("2021")
                     s.bind("<Return>", callme)
                     def callcanc(*args, **kwargs):
                         self.trees.delete(*self.trees.get_children())
                         value_inside.set("Select an option")
-                        self.setup()
-                        me.destroy()
-                        s.destroy()
-                        btc.destroy()
-                        bts.destroy()
-                        self.ll.place_forget()
+                        sortframe.destroy()
                         self.count=0
-                        pro=[]
-                        for i in self.trees.get_children():
-                            pro.append(int(self.trees.item(i)['values'][7]))
-                        self.profit.config(text=f"Total Assumed Profit= Rs.{sum(pro)}/-")
+                        self.setup()
                         ll1.config(text="Sort By")
-                        sortbyoptions.place(x=120, y=15)
-                        dump_btn.place(x=930, y=10)
-                    bts= Button(master, text="SORT",font=('ariel', 17, 'bold'), bg="lightgreen", command=callme)
+                    bts= Button(sortframe, text="SORT",font=('ariel', 17, 'bold'), bg="lightgreen", command=callme)
                     bts.place(x=700, y=10)
-                    btc= Button(master, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcanc)
+                    btc= Button(sortframe, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcanc)
                     btc.place(x=840, y=10)
 
                 elif selection=="By Year":
-                    sortbyoptions.place_forget()
                     ll1.config(text="Sort By Year")
-                    dump_btn.place_forget()
+                    ll1.lift()
                     def callme(*args, **kwargs):
                         self.ll.place_forget()
                         sel=s.get()
@@ -1109,7 +1127,7 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                         self.profit.config(text=f"Total Assumed Profit= Rs.{sum(pro)}/-")
                         
                     val_s= IntVar()
-                    s= Spinbox(master, from_=2018, to=2025, textvariable=val_s, width=9, font=("Ariel", 15, "bold"))
+                    s= Spinbox(sortframe, from_=2018, to=2025, textvariable=val_s, width=9, font=("Ariel", 15, "bold"))
                     s.place(x=210, y=20)
                     s.bind("<Return>", callme)
                     val_s.set("2021")
@@ -1117,29 +1135,19 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                     def callcanc(*args, **kwargs):
                         self.trees.delete(*self.trees.get_children())
                         value_inside.set("Select an option")
-                        self.setup()
-                        s.destroy()
-                        btc.destroy()
-                        bts.destroy()
-                        self.ll.place_forget()
+                        sortframe.destroy()
                         self.count=0
-                        pro=[]
-                        for i in self.trees.get_children():
-                            pro.append(int(self.trees.item(i)['values'][7]))
-                        self.profit.config(text=f"Total Assumed Profit= Rs.{sum(pro)}/-")
+                        self.setup()
                         ll1.config(text="Sort By")
-                        sortbyoptions.place(x=120, y=15)
-                        dump_btn.place(x=930, y=10)
-                    bts= Button(master, text="SORT",font=('ariel', 17, 'bold'), bg="lightgreen", command=callme)
+                    bts= Button(sortframe, text="SORT",font=('ariel', 17, 'bold'), bg="lightgreen", command=callme)
                     bts.place(x=400, y=10)
-                    btc= Button(master, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcanc)
+                    btc= Button(sortframe, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcanc)
                     btc.place(x=540, y=10)
 
                 elif selection=="By Vender":
-                    sortbyoptions.place_forget()
-                    c.execute(f"select Vender from {TableName}")
                     ll1.config(text="Sort By Vender")
-                    dump_btn.place_forget()
+                    ll1.lift()
+                    c.execute(f"select Vender from {TableName}")
                     val=[]
                     for x in c:
                         if x[0] not in val:
@@ -1166,27 +1174,19 @@ def stock_review(*args, **kwargs):     #inside the stock addition section
                     def callcanc(*args, **kwargs):
                         self.trees.delete(*self.trees.get_children())
                         value_inside.set("Select an option")
-                        self.setup()
-                        me.destroy()
-                        btc.destroy()
-                        self.ll.place_forget()
+                        sortframe.destroy()
                         self.count=0
-                        pro=[]
-                        for i in self.trees.get_children():
-                            pro.append(int(self.trees.item(i)['values'][7]))
-                        self.profit.config(text=f"Total Assumed Profit= Rs.{sum(pro)}/-")
+                        self.setup()
                         ll1.config(text="Sort By")
-                        sortbyoptions.place(x=120, y=15)
-                        dump_btn.place(x=930, y=10)
-                    value_in = StringVar(master)
-                    me= tkinter.ttk.Combobox(master, textvariable=value_in, values=val)
+                    value_in = StringVar(sortframe)
+                    me= tkinter.ttk.Combobox(sortframe, textvariable=value_in, values=val)
                     me.place(x=280, y=10)
                     me.bind("<<ComboboxSelected>>", callme)
                     me.configure(width=20)
                     me.config(height=25)
                     me.config(font=("arial", 17, "bold"))
                     me.bind("<Return>", callme)
-                    btc= Button(master, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcanc)
+                    btc= Button(sortframe, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcanc)
                     btc.place(x=620, y=10)
 
             #sorting table data by 4 ways
@@ -1439,17 +1439,17 @@ Sno. Product Name			    Qty	Amount
             #showing bill
             btn_showbill= Button(master, text="Show Bill",font=('ariel', 17, 'bold'), bg="lightgreen", command= show_bill)
             btn_showbill.place(x=745, y=500)
-            
+
             def fun_sortdate(*args, **kwargs):
-                sortdate.place_forget()
-                sortmonth.place_forget()
-                sortyear.place_forget()
                 now = datetime.datetime.now()
                 y= int(now.strftime("%Y"))
                 m= int(now.strftime("%m"))
                 d= int(now.strftime("%d"))
                 cal= tkcalendar.Calendar(master, selectmode="day", year=y, day=d, month=m)
                 cal.place(x=30, y=10)
+                sortdate.place_forget()
+                sortmonth.place_forget()
+                sortyear.place_forget()
                 def calp(*args, **kwargs):
                     cal.place(x=30, y=10)
                     btt2.config(text="Hide Calendar")
@@ -1638,9 +1638,9 @@ Sno. Product Name			    Qty	Amount
                 bts.place(x=250, y=10)
                 btc= Button(master, text="Cancel Sort",font=('ariel', 17, 'bold'), bg="lightgreen", command=callcanc)
                 btc.place(x=390, y=10)
-
-            sortdate= Button(master, text="Sort by Date",width=15, bg="lightgreen", font=("arial 13 bold"), cursor="hand2", command=fun_sortdate )
-            sortdate.place(x=30, y=20)
+            if var_tkcalendar:
+                sortdate= Button(master, text="Sort by Date",width=15, bg="lightgreen", font=("arial 13 bold"), cursor="hand2", command=fun_sortdate )
+                sortdate.place(x=30, y=20)
             sortmonth= Button(master, text="Sort by Month",width=15, bg="lightgreen", font=("arial 13 bold"), cursor="hand2", command=fun_sortmonth )
             sortmonth.place(x=230, y=20)
             sortyear= Button(master, text="Sort by Year",width=15, bg="lightgreen", font=("arial 13 bold"), cursor="hand2", command=fun_sortyear )
